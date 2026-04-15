@@ -44,14 +44,14 @@ export function CartItemCard({ item, onCloseCart }: CartItemProps) {
   return (
     <div className="bg-popover rounded-lg p-2">
       <div className="flex flex-row gap-6">
-        <div className="relative size-[120px] overflow-hidden rounded-sm shrink-0">
+        <div className="relative size-20 sm:size-[100px] overflow-hidden rounded-sm shrink-0">
           <Image
             className="size-full object-cover"
-            width={240}
-            height={240}
-            blurDataURL={renderImage.url}
+            fill
+            sizes="100px"
             alt={renderImage.altText || item.merchandise.product.title}
             src={renderImage.url}
+            quality={75}
           />
 
           {/* Color pill overlay */}

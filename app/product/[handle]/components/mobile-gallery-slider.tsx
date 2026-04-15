@@ -19,50 +19,44 @@ export function MobileGallerySlider({ product }: MobileGallerySliderProps) {
     align: 'start',
     dragFree: false,
     loop: false,
+    watchDrag: true,
   });
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const onInit = useCallback(() => {
-    // Initialize carousel
-  }, []);
-
-  const onSelect = useCallback((emblaApi: any) => {
-    setSelectedIndex(emblaApi.selectedScrollSnap());
+  const onSelect = useCallback((api: any) => {
+    setSelectedIndex(api.selectedScrollSnap());
   }, []);
 
   useEffect(() => {
     if (!emblaApi) return;
-
-    onInit();
     onSelect(emblaApi);
-    emblaApi.on('reInit', onInit);
     emblaApi.on('select', onSelect);
-  }, [emblaApi, onInit, onSelect]);
+    emblaApi.on('reInit', onSelect);
+    return () => {
+      emblaApi.off('select', onSelect);
+      emblaApi.off('reInit', onSelect);
+    };
+  }, [emblaApi, onSelect]);
 
   const totalImages = images.length;
-
   if (totalImages === 0) return null;
 
   return (
     <div className="relative w-full h-full">
-      {/* Embla Carousel */}
       <div className="overflow-hidden h-full" ref={emblaRef}>
-        <div className="flex h-full">
+        <div className="flex h-full touch-pan-y">
           {images.map((image, index) => (
             <div
-              key={`${image.url}-${image.selectedOptions?.map(o => `${o.name},${o.value}`).join('-')}`}
+              key={`${image.url}-${index}`}
               className="flex-shrink-0 w-full h-full relative"
             >
               <Image
-                style={{
-                  aspectRatio: `${image.width} / ${image.height}`,
-                }}
                 src={image.url}
                 alt={image.altText}
-                width={image.width}
-                height={image.height}
-                className="w-full h-full object-cover"
-                quality={100}
+                fill
+                sizes="100vw"
+                className="object-cover"
+                quality={80}
                 priority={index === 0}
               />
             </div>
@@ -70,11 +64,10 @@ export function MobileGallerySlider({ product }: MobileGallerySliderProps) {
         </div>
       </div>
 
-      {/* Counter Badge - styled like Latest drop badge */}
       {totalImages > 1 && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
           <Badge variant="outline-secondary">
-            {selectedIndex + 1}/{totalImages}
+            {selectedIndex + 1} / {totalImages}
           </Badge>
         </div>
       )}

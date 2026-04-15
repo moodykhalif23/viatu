@@ -13,11 +13,10 @@ export const ProductImage = ({ product }: { product: Product }) => {
     <Image
       src={variantImage.url}
       alt={variantImage.altText || product.title}
-      width={variantImage.width}
-      height={variantImage.height}
-      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-      className="object-cover size-full"
-      quality={100}
+      fill
+      sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
+      className="object-cover transition-transform duration-300 group-hover:scale-105"
+      quality={80}
       placeholder={variantImage?.thumbhash ? 'blur' : undefined}
       blurDataURL={variantImage?.thumbhash}
     />

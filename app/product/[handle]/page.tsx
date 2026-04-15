@@ -117,8 +117,8 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
 
       <div className="flex flex-col md:grid md:grid-cols-12 md:gap-sides min-h-max">
         {/* Mobile Gallery Slider */}
-        <div className="md:hidden col-span-full h-[60vh] min-h-[400px]">
-          <Suspense fallback={null}>
+        <div className="md:hidden col-span-full" style={{ height: 'min(60vh, 480px)' }}>
+          <Suspense fallback={<div className="w-full h-full bg-muted animate-pulse" />}>
             <MobileGallerySlider product={product} />
           </Suspense>
         </div>
