@@ -1,9 +1,7 @@
 'use client';
 
 import { ArrowRight, PlusCircleIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { useFormStatus } from 'react-dom';
 import { useCart } from './cart-context';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '../ui/button';
@@ -194,24 +192,21 @@ export default function CartModal() {
 }
 
 function CheckoutButton() {
-  const { pending } = useFormStatus();
   const { cart, isPending } = useCart();
-  const router = useRouter();
-
   const checkoutUrl = cart?.checkoutUrl;
 
-  const isLoading = pending;
-  const isDisabled = !checkoutUrl || isPending;
+  const isLoading = isPending;
+  const isDisabled = !checkoutUrl || isLoading;
 
   return (
     <Button
-      type="submit"
+      type="button"
       disabled={isDisabled}
       size="lg"
       className="flex relative gap-3 justify-between items-center w-full"
       onClick={() => {
         if (checkoutUrl) {
-          router.push(checkoutUrl);
+          window.location.assign(checkoutUrl);
         }
       }}
     >

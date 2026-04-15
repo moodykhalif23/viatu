@@ -11,6 +11,7 @@ import { Header } from '../components/layout/header';
 import dynamic from 'next/dynamic';
 import { V0Provider } from '../lib/context';
 import { cn } from '../lib/utils';
+import { ScrollToTopOnRouteChange } from '@/components/layout/scroll-to-top-on-route-change';
 
 const V0Setup = dynamic(() => import('@/components/v0-setup'));
 
@@ -59,6 +60,7 @@ export default async function RootLayout({
           <CartProvider>
             <NuqsAdapter>
               <main data-vaul-drawer-wrapper="true">
+                <ScrollToTopOnRouteChange />
                 <Header collections={collections} />
                 {children}
               </main>
