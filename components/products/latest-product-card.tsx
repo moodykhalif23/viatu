@@ -20,15 +20,15 @@ export function LatestProductCard({
   if (principal) {
     return (
       <div className={cn('min-h-fold flex flex-col relative', className)}>
-        <Link href={`/product/${product.handle}`} className="size-full flex-1 flex flex-col" prefetch>
-          <Image
+        <Link href={`/product/${product.handle}`} className="size-full flex-1 flex flex-col relative" prefetch>
+    <Image
             priority
             src={product.featuredImage.url}
             alt={product.featuredImage.altText}
-            width={1000}
-            height={100}
-            quality={100}
-            className="object-cover size-full flex-1"
+            fill
+            sizes="(max-width: 768px) 100vw, 66vw"
+            quality={80}
+            className="object-cover"
           />
         </Link>
         <div className="absolute bottom-0 left-0 grid w-full grid-cols-4 gap-6 pointer-events-none max-md:contents p-sides">
@@ -44,13 +44,14 @@ export function LatestProductCard({
 
   return (
     <div className={cn('relative', className)}>
-      <Link href={`/product/${product.handle}`} className="block w-full aspect-square" prefetch>
+      <Link href={`/product/${product.handle}`} className="block w-full aspect-square overflow-hidden" prefetch>
         <Image
           src={product.featuredImage.url}
           alt={product.featuredImage.altText}
-          width={1000}
-          height={100}
-          className="object-cover size-full"
+          fill
+          sizes="(max-width: 768px) 50vw, 33vw"
+          quality={80}
+          className="object-cover"
         />
       </Link>
 
