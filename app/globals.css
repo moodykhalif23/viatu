@@ -392,10 +392,9 @@
 }
 
 html,
-body,
-* {
+body {
   overscroll-behavior: none;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 /* Safe area support for notched devices */
@@ -420,4 +419,3 @@ html {
 img {
   image-rendering: auto;
 }
-

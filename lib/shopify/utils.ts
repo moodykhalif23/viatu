@@ -2,10 +2,12 @@ import { thumbHashToDataURL } from 'thumbhash';
 import { ProductCollectionSortKey, ProductSortKey } from './types';
 
 // Format price utility
-export const formatPrice = (price: string, currencyCode: string): string => {
-  return new Intl.NumberFormat(undefined, {
+const DEFAULT_DISPLAY_CURRENCY_CODE = 'KES';
+
+export const formatPrice = (price: string, _currencyCode: string): string => {
+  return new Intl.NumberFormat('en-KE', {
     style: 'currency',
-    currency: currencyCode,
+    currency: DEFAULT_DISPLAY_CURRENCY_CODE,
     currencyDisplay: 'narrowSymbol',
   }).format(parseFloat(price));
 };
