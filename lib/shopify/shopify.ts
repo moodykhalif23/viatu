@@ -219,7 +219,7 @@ function buildCart(id: string, lines: ShopifyCartLine[]): ShopifyCart {
       subtotalAmount: { amount: totalStr, currencyCode: 'USD' },
       totalTaxAmount: { amount: '0.00', currencyCode: 'USD' },
     },
-    checkoutUrl: '#checkout',
+    checkoutUrl: '/checkout',
   };
 }
 
