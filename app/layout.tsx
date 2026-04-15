@@ -8,6 +8,7 @@ import { DebugGrid } from '@/components/debug-grid';
 import { isDevelopment } from '@/lib/constants';
 import { getCollections } from '@/lib/shopify';
 import { Header } from '../components/layout/header';
+import React, { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { V0Provider } from '../lib/context';
 import { cn } from '../lib/utils';
@@ -60,7 +61,9 @@ export default async function RootLayout({
           <CartProvider>
             <NuqsAdapter>
               <main data-vaul-drawer-wrapper="true">
-                <ScrollToTopOnRouteChange />
+                <Suspense fallback={null}>
+                  <ScrollToTopOnRouteChange />
+                </Suspense>
                 <Header collections={collections} />
                 {children}
               </main>
