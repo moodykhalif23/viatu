@@ -397,3 +397,27 @@ body,
   overscroll-behavior: none;
   scroll-behavior: smooth;
 }
+
+/* Safe area support for notched devices */
+:root {
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+
+/* Improve tap targets on mobile */
+button, a, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Prevent text size adjustment on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Smooth image rendering */
+img {
+  image-rendering: auto;
+}
+
