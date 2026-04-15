@@ -6,10 +6,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatPrice(amount: string | number, currencyCode: string) {
-  return new Intl.NumberFormat('en-US', {
+const DEFAULT_CURRENCY_CODE = 'KES';
+
+export function formatPrice(amount: string | number, _currencyCode?: string) {
+  return new Intl.NumberFormat('en-KE', {
     style: 'currency',
-    currency: currencyCode,
+    currency: DEFAULT_CURRENCY_CODE,
   }).format(Number(amount));
 }
 
