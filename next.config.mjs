@@ -3,10 +3,6 @@ const nextConfig = {
   experimental: {
     inlineCss: true,
     useCache: true,
-    clientSegmentCache: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
