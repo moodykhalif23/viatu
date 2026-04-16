@@ -1,60 +1,65 @@
 import { Package, ShoppingCart, Users, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import Link from 'next/link';
+import { db } from '@/lib/db';
+import { getProducts } from '@/lib/shopify';
 
-const stats = [
-  {
-    label: 'Total Shoes',
-    value: '248',
-    change: '+12 this month',
-    trend: 'up',
-    icon: Package,
-    href: '/admin/shoes',
-  },
-  {
-    label: 'Orders',
-    value: '1,340',
-    change: '+8.2% vs last month',
-    trend: 'up',
-    icon: ShoppingCart,
-    href: '/admin/orders',
-  },
-  {
-    label: 'Customers',
-    value: '5,892',
-    change: '+3.1% vs last month',
-    trend: 'up',
-    icon: Users,
-    href: '/admin/customers',
-  },
-  {
-    label: 'Revenue',
-    value: 'KSh 8,432,000',
-    change: '-2.4% vs last month',
-    trend: 'down',
-    icon: TrendingUp,
-    href: '/admin/analytics',
-  },
-];
-
-const recentOrders = [
-  { id: '#ORD-1042', customer: 'Alex Rivera', product: 'Air Stride Pro — Size 10', status: 'Shipped', amount: 'KSh 12,999' },
-  { id: '#ORD-1041', customer: 'Jordan Lee', product: 'Urban Runner — Size 9', status: 'Processing', amount: 'KSh 8,999' },
-  { id: '#ORD-1040', customer: 'Sam Chen', product: 'Classic Leather Boot — Size 11', status: 'Delivered', amount: 'KSh 19,999' },
-  { id: '#ORD-1039', customer: 'Morgan Kim', product: 'Trail Blazer — Size 8', status: 'Shipped', amount: 'KSh 14,999' },
-  { id: '#ORD-1038', customer: 'Taylor Brooks', product: 'Slip-On Canvas — Size 7', status: 'Delivered', amount: 'KSh 5,999' },
-];
-
-const statusColors: Record<string, string> = {
-  Shipped: 'bg-blue-100 text-blue-700',
-  Processing: 'bg-yellow-100 text-yellow-700',
-  Delivered: 'bg-green-100 text-green-700',
-  Cancelled: 'bg-red-100 text-red-700',
+const STATUS_STYLES: Record<string, string> = {
+  SHIPPED:    'bg-purple-100 text-purple-800',
+  PROCESSING: 'bg-yellow-100 text-yellow-800',
+  DELIVERED:  'bg-green-100 text-green-800',
+  CANCELLED:  'bg-red-100 text-red-800',
+  PENDING:    'bg-gray-100 text-gray-800',
+  REFUNDED:   'bg-gray-100 text-gray-800',
 };
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const [orders, customerCount, products] = await Promise.all([
+    db.order.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      include: {
+        customer: { select: { firstName: true, lastName: true, email: true } },
+        items: { select: { title: true, quantity: true } },
+      },
+    }),
+    db.customer.count(),
+    getProducts({}),
+  ]);
+
+  const totalOrders = await db.order.count();
+  const revenue = orders.reduce((sum, o) =>
+    o.status !== 'CANCELLED' && o.status !== 'REFUNDED' ? sum + Number(o.totalAmount) : sum, 0
+  );
+
+  const stats = [
+    {
+      label: 'Total Shoes',
+      value: products.length.toLocaleString(),
+      icon: Package,
+      href: '/admin/shoes',
+    },
+    {
+      label: 'Orders',
+      value: totalOrders.toLocaleString(),
+      icon: ShoppingCart,
+      href: '/admin/orders',
+    },
+    {
+      label: 'Customers',
+      value: customerCount.toLocaleString(),
+      icon: Users,
+      href: '/admin/customers',
+    },
+    {
+      label: 'Revenue',
+      value: `KES ${revenue.toLocaleString()}`,
+      icon: TrendingUp,
+      href: '/admin/analytics',
+    },
+  ];
+
   return (
     <div className="p-8 space-y-8">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground text-sm mt-1">Welcome back — here's what's happening at SoleVault.</p>
@@ -62,7 +67,7 @@ export default function AdminDashboard() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {stats.map(({ label, value, change, trend, icon: Icon, href }) => (
+        {stats.map(({ label, value, icon: Icon, href }) => (
           <Link
             key={label}
             href={href}
@@ -74,22 +79,7 @@ export default function AdminDashboard() {
                 <Icon className="size-4 text-foreground" />
               </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold">{value}</p>
-              <p
-                className={cn(
-                  'text-xs mt-1 flex items-center gap-1',
-                  trend === 'up' ? 'text-green-600' : 'text-red-500'
-                )}
-              >
-                {trend === 'up' ? (
-                  <ArrowUpRight className="size-3" />
-                ) : (
-                  <ArrowDownRight className="size-3" />
-                )}
-                {change}
-              </p>
-            </div>
+            <p className="text-2xl font-bold">{value}</p>
           </Link>
         ))}
       </div>
@@ -108,36 +98,41 @@ export default function AdminDashboard() {
               <tr className="border-b bg-muted/40">
                 <th className="text-left px-6 py-3 font-medium text-muted-foreground">Order</th>
                 <th className="text-left px-6 py-3 font-medium text-muted-foreground">Customer</th>
-                <th className="text-left px-6 py-3 font-medium text-muted-foreground">Product</th>
+                <th className="text-left px-6 py-3 font-medium text-muted-foreground">Items</th>
                 <th className="text-left px-6 py-3 font-medium text-muted-foreground">Status</th>
                 <th className="text-right px-6 py-3 font-medium text-muted-foreground">Amount</th>
               </tr>
             </thead>
             <tbody>
-              {recentOrders.map(order => (
-                <tr key={order.id} className="border-b last:border-0 hover:bg-muted/20 transition-colors">
-                  <td className="px-6 py-4 font-mono font-medium">{order.id}</td>
-                  <td className="px-6 py-4">{order.customer}</td>
-                  <td className="px-6 py-4 text-muted-foreground">{order.product}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[order.status]}`}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right font-medium">{order.amount}</td>
+              {orders.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">No orders yet.</td>
                 </tr>
-              ))}
+              ) : orders.map((order) => {
+                const name = order.customer
+                  ? [order.customer.firstName, order.customer.lastName].filter(Boolean).join(' ') || order.customer.email
+                  : '—';
+                const items = order.items.map((i) => `${i.title}${i.quantity > 1 ? ` ×${i.quantity}` : ''}`).join(', ');
+                return (
+                  <tr key={order.id} className="border-b last:border-0 hover:bg-muted/20 transition-colors">
+                    <td className="px-6 py-4 font-mono font-medium">#{order.orderNumber}</td>
+                    <td className="px-6 py-4">{name}</td>
+                    <td className="px-6 py-4 text-muted-foreground max-w-xs truncate">{items || '—'}</td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLES[order.status] ?? ''}`}>
+                        {order.status.charAt(0) + order.status.slice(1).toLowerCase()}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right font-medium">
+                      {order.currencyCode} {Number(order.totalAmount).toLocaleString()}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       </div>
     </div>
   );
-}
-
-// inline cn helper since this is a server component
-function cn(...classes: (string | false | undefined)[]) {
-  return classes.filter(Boolean).join(' ');
 }
