@@ -5,6 +5,7 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  serverExternalPackages: ['@prisma/client', '@prisma/extension-accelerate'],
   images: {
     qualities: [75, 80, 85, 90],
     formats: ['image/avif', 'image/webp'],
