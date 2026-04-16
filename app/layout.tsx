@@ -7,7 +7,7 @@ import { CartProvider } from '@/components/cart/cart-context';
 import { DebugGrid } from '@/components/debug-grid';
 import { isDevelopment } from '@/lib/constants';
 import { getCollections } from '@/lib/shopify';
-import { Header } from '../components/layout/header';
+import { ConditionalHeader } from '../components/layout/conditional-header';
 import React, { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { V0Provider } from '../lib/context';
@@ -71,7 +71,7 @@ export default async function RootLayout({
                 <Suspense fallback={null}>
                   <ScrollToTopOnRouteChange />
                 </Suspense>
-                <Header collections={collections} />
+                <ConditionalHeader collections={collections} />
                 {children}
               </main>
               {isDevelopment && <DebugGrid />}

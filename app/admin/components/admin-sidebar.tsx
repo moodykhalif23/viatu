@@ -15,10 +15,10 @@ import {
   BarChart3,
   Settings,
   LogOut,
-  Footprints,
   Menu,
   Image as ImageIcon,
 } from 'lucide-react';
+import { LogoSvg } from '@/components/layout/header/logo-svg';
 import { logoutAction } from '../actions';
 
 const navItems = [
@@ -63,8 +63,7 @@ function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
 function AdminBrand() {
   return (
     <div className="flex items-center gap-2 px-6 py-5 border-b">
-      <Footprints className="size-6 text-foreground" />
-      <span className="font-bold text-lg tracking-tight">SoleVault</span>
+      <LogoSvg className="h-6 w-auto" />
       <span className="ml-auto text-xs font-medium bg-muted px-2 py-0.5 rounded-full text-muted-foreground">Admin</span>
     </div>
   );
