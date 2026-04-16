@@ -249,48 +249,140 @@ function buildCart(id: string, lines: ShopifyCartLine[]): ShopifyCart {
 // Public read API
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// DB-backed read API
+// ---------------------------------------------------------------------------
+
+async function getDb() {
+  const { db } = await import('@/lib/db');
+  return db;
+}
+
+function dbProductToShopify(p: any): ShopifyProduct {
+  const price = String(p.minPrice);
+  const compareAt = p.compareAtPrice ? String(p.compareAtPrice) : price;
+  const currency = p.currencyCode ?? 'KES';
+  const sizes = p.options?.[0]?.values?.map((v: any) => v.value) ?? [];
+
+  return {
+    id: p.id,
+    handle: p.handle,
+    title: p.title,
+    description: p.description ?? '',
+    descriptionHtml: p.descriptionHtml ?? '',
+    productType: p.productType ?? '',
+    options: p.options?.map((o: any) => ({
+      id: o.id,
+      name: o.name,
+      values: o.values.map((v: any) => v.value),
+    })) ?? [],
+    images: {
+      edges: (p.images ?? [])
+        .sort((a: any, b: any) => a.position - b.position)
+        .map((img: any) => ({ node: { url: img.url, altText: img.altText ?? '' } })),
+    },
+    priceRange: { minVariantPrice: { amount: price, currencyCode: currency } },
+    compareAtPriceRange: { minVariantPrice: { amount: compareAt, currencyCode: currency } },
+    variants: {
+      edges: (p.variants ?? []).map((v: any) => ({
+        node: {
+          id: v.id,
+          title: v.title,
+          price: { amount: String(v.price), currencyCode: currency },
+          availableForSale: v.availableForSale,
+          selectedOptions: v.selectedOptions?.map((so: any) => ({ name: so.name, value: so.value })) ?? [],
+        },
+      })),
+    },
+  };
+}
+
+const DB_INCLUDE = {
+  images: true,
+  options: { include: { values: true } },
+  variants: { include: { selectedOptions: true } },
+} as const;
+
 export async function getCollections(): Promise<ShopifyCollection[]> {
-  return MOCK_COLLECTIONS;
+  try {
+    const db = await getDb();
+    const cols = await db.collection.findMany({ orderBy: { title: 'asc' } });
+    return cols.map((c) => ({ id: c.id, handle: c.handle, title: c.title, description: c.description ?? '' }));
+  } catch {
+    return MOCK_COLLECTIONS;
+  }
 }
 
 export async function getProducts({
   first, sortKey, reverse, query,
 }: { first?: number; sortKey?: string; reverse?: boolean; query?: string } = {}): Promise<ShopifyProduct[]> {
-  let results = Array.from(productStore.values());
-
-  if (query) {
-    const q = query.toLowerCase();
-    results = results.filter(p => p.title.toLowerCase().includes(q) || p.productType.toLowerCase().includes(q));
-  }
-  if (sortKey === 'PRICE') {
-    results.sort((a, b) => {
-      const diff = parseFloat(a.priceRange.minVariantPrice.amount) - parseFloat(b.priceRange.minVariantPrice.amount);
-      return reverse ? -diff : diff;
+  try {
+    const db = await getDb();
+    const rows = await db.product.findMany({
+      where: query ? {
+        OR: [
+          { title: { contains: query, mode: 'insensitive' } },
+          { productType: { contains: query, mode: 'insensitive' } },
+        ],
+      } : undefined,
+      orderBy: sortKey === 'PRICE'
+        ? { minPrice: reverse ? 'desc' : 'asc' }
+        : sortKey === 'TITLE'
+        ? { title: reverse ? 'desc' : 'asc' }
+        : { createdAt: 'desc' },
+      take: first,
+      include: DB_INCLUDE,
     });
-  } else if (sortKey === 'TITLE') {
-    results.sort((a, b) => reverse ? b.title.localeCompare(a.title) : a.title.localeCompare(b.title));
+    const results = rows.map(dbProductToShopify);
+    // keep in-memory admin additions that aren't in DB yet
+    const dbHandles = new Set(results.map(p => p.handle));
+    const memOnly = Array.from(productStore.values()).filter(p => !dbHandles.has(p.handle));
+    return [...results, ...memOnly];
+  } catch {
+    return Array.from(productStore.values());
   }
-  return first ? results.slice(0, first) : results;
 }
 
 export async function getProduct(handle: string): Promise<ShopifyProduct | null> {
+  try {
+    const db = await getDb();
+    const row = await db.product.findUnique({ where: { handle }, include: DB_INCLUDE });
+    if (row) return dbProductToShopify(row);
+  } catch {}
   return Array.from(productStore.values()).find(p => p.handle === handle) ?? null;
 }
 
 export async function getCollectionProducts({
   collection, limit, sortKey, reverse,
 }: { collection: string; limit?: number; sortKey?: string; reverse?: boolean; query?: string }): Promise<ShopifyProduct[]> {
+  try {
+    const db = await getDb();
+    const col = await db.collection.findUnique({
+      where: { handle: collection },
+      include: {
+        products: {
+          include: {
+            product: { include: DB_INCLUDE },
+          },
+        },
+      },
+    });
+    if (col) {
+      let results = col.products.map((pc: any) => dbProductToShopify(pc.product));
+      if (sortKey === 'PRICE') {
+        results.sort((a: ShopifyProduct, b: ShopifyProduct) => {
+          const diff = parseFloat(a.priceRange.minVariantPrice.amount) - parseFloat(b.priceRange.minVariantPrice.amount);
+          return reverse ? -diff : diff;
+        });
+      }
+      return limit ? results.slice(0, limit) : results;
+    }
+  } catch {}
+  // fallback to in-memory
   const types = COLLECTION_PRODUCT_MAP[collection];
   let results = (types === undefined || types.length === 0)
     ? Array.from(productStore.values())
     : Array.from(productStore.values()).filter(p => types.includes(p.productType));
-
-  if (sortKey === 'PRICE') {
-    results.sort((a, b) => {
-      const diff = parseFloat(a.priceRange.minVariantPrice.amount) - parseFloat(b.priceRange.minVariantPrice.amount);
-      return reverse ? -diff : diff;
-    });
-  }
   return limit ? results.slice(0, limit) : results;
 }
 
