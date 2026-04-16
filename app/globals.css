@@ -30,6 +30,7 @@
   /* Fonts */
   --font-family-sans: var(--font-geist-sans), sans-serif;
   --font-family-mono: var(--font-geist-mono), monospace;
+  --font-family-stencil: var(--font-saira-stencil), sans-serif;
 
   /* Line Heights */
   --text-xs--line-height: 1.2;

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Saira_Stencil_One } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'sonner';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
@@ -30,6 +30,13 @@ const geistMono = Geist_Mono({
   display: 'swap',
 });
 
+const sairaStencil = Saira_Stencil_One({
+  variable: '--font-saira-stencil',
+  subsets: ['latin'],
+  weight: '400',
+  display: 'swap',
+});
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -54,7 +61,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={cn(geistSans.variable, geistMono.variable, 'antialiased min-h-screen', { 'is-v0': isV0 })}
+        className={cn(geistSans.variable, geistMono.variable, sairaStencil.variable, 'antialiased min-h-screen', { 'is-v0': isV0 })}
         suppressHydrationWarning
       >
         <V0Provider isV0={isV0}>

@@ -12,12 +12,21 @@ interface ShopLinksProps {
 export function ShopLinks({ collections, label = 'Shop', align = 'left', className }: ShopLinksProps) {
   return (
     <div className={cn(align === 'right' ? 'text-right' : 'text-left', className)}>
-      <h4 className="text-lg font-extrabold md:text-xl">{label}</h4>
+      <h4
+        className="text-lg md:text-xl"
+        style={{ fontFamily: 'var(--font-saira-stencil), sans-serif' }}
+      >
+        {label}
+      </h4>
 
       <ul className="flex flex-col gap-1.5 leading-5 mt-5">
         {collections.map((item, index) => (
           <li key={`${item.handle}-${index}`}>
-            <Link href={`/shop/${item.handle}`} prefetch>
+            <Link
+              href={`/shop/${item.handle}`}
+              prefetch
+              style={{ fontFamily: 'var(--font-saira-stencil), sans-serif' }}
+            >
               {item.title}
             </Link>
           </li>
