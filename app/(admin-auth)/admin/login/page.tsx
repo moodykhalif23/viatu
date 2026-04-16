@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Footprints, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { loginAction } from '../actions';
+import { loginAction } from '../../../admin/actions';
 
 export default function AdminLoginPage() {
   const router = useRouter();
