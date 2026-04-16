@@ -1,26 +1,14 @@
 import { PrismaClient } from '@prisma/client';
+import { withAccelerate } from '@prisma/extension-accelerate';
 
-const globalForPrisma = globalThis as unknown as { db: PrismaClient | undefined };
+const globalForPrisma = globalThis as unknown as { db: ReturnType<typeof makePrismaClient> | undefined };
 
-function createPrismaClient(): PrismaClient {
-  const { Pool } = require('pg') as typeof import('pg');
-  const { PrismaPg } = require('@prisma/adapter-pg') as typeof import('@prisma/adapter-pg');
-
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  const adapter = new PrismaPg(pool);
-  return new PrismaClient({ adapter } as any);
+function makePrismaClient() {
+  return new PrismaClient({
+    accelerateUrl: process.env.DATABASE_URL,
+  } as any).$extends(withAccelerate());
 }
 
-export function getDb(): PrismaClient {
-  if (!globalForPrisma.db) {
-    globalForPrisma.db = createPrismaClient();
-  }
-  return globalForPrisma.db;
-}
+export const db = globalForPrisma.db ?? makePrismaClient();
 
-// Convenience re-export for code that imports `db` directly
-export const db = new Proxy({} as PrismaClient, {
-  get(_target, prop) {
-    return (getDb() as any)[prop];
-  },
-});
+if (process.env.NODE_ENV !== 'production') globalForPrisma.db = db;
