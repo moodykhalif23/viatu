@@ -1,8 +1,17 @@
+'use client';
+
 import Link from 'next/link';
 import { CreditCard, Lock, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCart } from '@/components/cart/cart-context';
+import { formatPrice } from '@/lib/shopify/utils';
 
 export default function CheckoutPage() {
+  const { cart } = useCart();
+
+  const subtotal = cart?.cost.subtotalAmount;
+  const total = cart?.cost.totalAmount;
+
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-10 md:px-6">
       <div>
@@ -12,22 +21,46 @@ export default function CheckoutPage() {
 
       <section className="rounded-xl border bg-background p-5 md:p-6" id="order-summary">
         <h2 className="text-lg font-semibold">Order Summary</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Your selected items are ready. Shipping and taxes will be calculated once payment details are confirmed.
-        </p>
+
+        {cart && cart.lines.length > 0 && (
+          <ul className="mt-4 flex flex-col gap-3">
+            {cart.lines.map((item) => (
+              <li key={item.merchandise.id} className="flex items-center justify-between text-sm">
+                <span className="text-foreground">
+                  {item.merchandise.product.title}
+                  {item.merchandise.title !== 'Default Title' && (
+                    <span className="ml-1 text-muted-foreground">— {item.merchandise.title}</span>
+                  )}
+                  <span className="ml-2 text-muted-foreground">× {item.quantity}</span>
+                </span>
+                <span>
+                  {formatPrice(item.cost.totalAmount.amount, item.cost.totalAmount.currencyCode)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
 
         <div className="mt-6 grid gap-3 text-sm">
           <div className="flex items-center justify-between border-b pb-2">
             <span>Subtotal</span>
-            <span>Calculated from cart</span>
+            <span>
+              {subtotal
+                ? formatPrice(subtotal.amount, subtotal.currencyCode)
+                : '—'}
+            </span>
           </div>
           <div className="flex items-center justify-between border-b pb-2">
             <span>Shipping</span>
-            <span>Calculated at payment</span>
+            <span className="text-muted-foreground">Calculated at payment</span>
           </div>
           <div className="flex items-center justify-between font-medium">
             <span>Total</span>
-            <span>Finalized at payment</span>
+            <span>
+              {total
+                ? formatPrice(total.amount, total.currencyCode)
+                : '—'}
+            </span>
           </div>
         </div>
       </section>
@@ -39,7 +72,14 @@ export default function CheckoutPage() {
         </p>
 
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <Button size="lg" className="gap-2">
+          <Button
+            size="lg"
+            className="gap-2"
+            disabled={!cart?.checkoutUrl}
+            onClick={() => {
+              if (cart?.checkoutUrl) window.location.assign(cart.checkoutUrl);
+            }}
+          >
             <CreditCard className="size-4" />
             Continue to Payment
           </Button>
