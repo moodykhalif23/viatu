@@ -64,7 +64,6 @@ function AdminBrand() {
   return (
     <div className="flex items-center gap-2 px-6 py-5 border-b">
       <LogoSvg className="h-6 w-auto" />
-      <span className="ml-auto text-xs font-medium bg-muted px-2 py-0.5 rounded-full text-muted-foreground">Admin</span>
     </div>
   );
 }
@@ -77,7 +76,6 @@ export function AdminSidebar() {
       <header className="md:hidden sticky top-0 z-30 flex items-center justify-between border-b bg-background px-4 py-3">
         <div className="flex items-center gap-2">
           <LogoSvg className="h-5 w-auto" />
-          <span className="text-xs font-medium bg-muted px-2 py-0.5 rounded-full text-muted-foreground">Admin</span>
         </div>
 
         <Sheet open={open} onOpenChange={setOpen}>
