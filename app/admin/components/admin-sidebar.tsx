@@ -17,16 +17,19 @@ import {
   LogOut,
   Footprints,
   Menu,
+  Image as ImageIcon,
 } from 'lucide-react';
+import { logoutAction } from '../actions';
 
 const navItems = [
-  { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { label: 'Shoes', href: '/admin/shoes', icon: Package },
-  { label: 'Orders', href: '/admin/orders', icon: ShoppingCart },
-  { label: 'Customers', href: '/admin/customers', icon: Users },
-  { label: 'Collections', href: '/admin/collections', icon: Tag },
-  { label: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
-  { label: 'Settings', href: '/admin/settings', icon: Settings },
+  { label: 'Dashboard',    href: '/admin',              icon: LayoutDashboard },
+  { label: 'Shoes',        href: '/admin/shoes',        icon: Package },
+  { label: 'Hero Images',  href: '/admin/hero',         icon: ImageIcon },
+  { label: 'Orders',       href: '/admin/orders',       icon: ShoppingCart },
+  { label: 'Customers',    href: '/admin/customers',    icon: Users },
+  { label: 'Collections',  href: '/admin/collections',  icon: Tag },
+  { label: 'Analytics',    href: '/admin/analytics',    icon: BarChart3 },
+  { label: 'Settings',     href: '/admin/settings',     icon: Settings },
 ];
 
 function AdminNav({ onNavigate }: { onNavigate?: () => void }) {
@@ -92,16 +95,22 @@ export function AdminSidebar() {
             <div className="flex h-full flex-col">
               <AdminBrand />
               <AdminNav onNavigate={() => setOpen(false)} />
-              <div className="px-3 py-4 border-t">
-                <Link
-                  href="/"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                >
-                  <LogOut className="size-4 shrink-0" />
-                  Back to Store
-                </Link>
-              </div>
+      <div className="px-3 py-4 border-t space-y-1">
+          <Link
+            href="/"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <LogOut className="size-4 shrink-0" />
+            Back to Store
+          </Link>
+          <form action={logoutAction}>
+            <button type="submit" className="flex w-full items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-red-500 hover:bg-red-50 transition-colors">
+              <LogOut className="size-4 shrink-0" />
+              Sign out
+            </button>
+          </form>
+        </div>
             </div>
           </SheetContent>
         </Sheet>
@@ -110,7 +119,7 @@ export function AdminSidebar() {
       <aside className="hidden md:flex w-64 shrink-0 border-r bg-background flex-col min-h-screen sticky top-0">
         <AdminBrand />
         <AdminNav />
-        <div className="px-3 py-4 border-t">
+      <div className="px-3 py-4 border-t space-y-1">
           <Link
             href="/"
             className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
@@ -118,6 +127,12 @@ export function AdminSidebar() {
             <LogOut className="size-4 shrink-0" />
             Back to Store
           </Link>
+          <form action={logoutAction}>
+            <button type="submit" className="flex w-full items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-red-500 hover:bg-red-50 transition-colors">
+              <LogOut className="size-4 shrink-0" />
+              Sign out
+            </button>
+          </form>
         </div>
       </aside>
     </>

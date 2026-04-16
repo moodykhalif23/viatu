@@ -28,7 +28,7 @@ const stats = [
   },
   {
     label: 'Revenue',
-    value: '$84,320',
+    value: 'KSh 8,432,000',
     change: '-2.4% vs last month',
     trend: 'down',
     icon: TrendingUp,
@@ -37,11 +37,11 @@ const stats = [
 ];
 
 const recentOrders = [
-  { id: '#ORD-1042', customer: 'Alex Rivera', product: 'Air Stride Pro — Size 10', status: 'Shipped', amount: '$129.99' },
-  { id: '#ORD-1041', customer: 'Jordan Lee', product: 'Urban Runner — Size 9', status: 'Processing', amount: '$89.99' },
-  { id: '#ORD-1040', customer: 'Sam Chen', product: 'Classic Leather Boot — Size 11', status: 'Delivered', amount: '$199.99' },
-  { id: '#ORD-1039', customer: 'Morgan Kim', product: 'Trail Blazer — Size 8', status: 'Shipped', amount: '$149.99' },
-  { id: '#ORD-1038', customer: 'Taylor Brooks', product: 'Slip-On Canvas — Size 7', status: 'Delivered', amount: '$59.99' },
+  { id: '#ORD-1042', customer: 'Alex Rivera', product: 'Air Stride Pro — Size 10', status: 'Shipped', amount: 'KSh 12,999' },
+  { id: '#ORD-1041', customer: 'Jordan Lee', product: 'Urban Runner — Size 9', status: 'Processing', amount: 'KSh 8,999' },
+  { id: '#ORD-1040', customer: 'Sam Chen', product: 'Classic Leather Boot — Size 11', status: 'Delivered', amount: 'KSh 19,999' },
+  { id: '#ORD-1039', customer: 'Morgan Kim', product: 'Trail Blazer — Size 8', status: 'Shipped', amount: 'KSh 14,999' },
+  { id: '#ORD-1038', customer: 'Taylor Brooks', product: 'Slip-On Canvas — Size 7', status: 'Delivered', amount: 'KSh 5,999' },
 ];
 
 const statusColors: Record<string, string> = {

@@ -4,6 +4,7 @@ import { Product } from '@/lib/shopify/types';
 import { AddToCart, AddToCartButton } from '../cart/add-to-cart';
 import { Suspense } from 'react';
 import Link from 'next/link';
+import { formatPrice } from '@/lib/shopify/utils';
 
 export function FeaturedProductLabel({
   product,
@@ -35,9 +36,9 @@ export function FeaturedProductLabel({
           <p className="text-sm font-medium line-clamp-3">{product.description}</p>
         </div>
         <div className="flex col-span-1 gap-3 items-center text-2xl font-semibold md:self-end">
-          ${Number(product.priceRange.minVariantPrice.amount)}
+          {formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}
           {product.compareAtPrice && (
-            <span className="line-through opacity-30">${Number(product.compareAtPrice.amount)}</span>
+            <span className="line-through opacity-30">{formatPrice(product.compareAtPrice.amount, product.compareAtPrice.currencyCode)}</span>
           )}
         </div>
         <Suspense
@@ -59,9 +60,9 @@ export function FeaturedProductLabel({
           {product.title}
         </Link>
         <div className="flex gap-2 items-center text-base font-semibold">
-          ${Number(product.priceRange.minVariantPrice.amount)}
+          {formatPrice(product.priceRange.minVariantPrice.amount, product.priceRange.minVariantPrice.currencyCode)}
           {product.compareAtPrice && (
-            <span className="text-sm line-through opacity-30">${Number(product.compareAtPrice.amount)}</span>
+            <span className="text-sm line-through opacity-30">{formatPrice(product.compareAtPrice.amount, product.compareAtPrice.currencyCode)}</span>
           )}
         </div>
       </div>
