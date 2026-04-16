@@ -44,7 +44,7 @@ export function LatestProductCard({
 
   return (
     <div className={cn('relative', className)}>
-      <Link href={`/product/${product.handle}`} className="block w-full aspect-square overflow-hidden" prefetch>
+      <Link href={`/product/${product.handle}`} className="relative block w-full aspect-square overflow-hidden" prefetch>
         <Image
           src={product.featuredImage.url}
           alt={product.featuredImage.altText}
