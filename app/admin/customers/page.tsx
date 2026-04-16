@@ -14,38 +14,38 @@ export default async function CustomersPage() {
         <p className="text-sm text-muted-foreground mt-1">{customers.length} total customers</p>
       </div>
 
-      {customers.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No customers yet.</p>
-      ) : (
-        <div className="rounded-md border bg-background">
-          <Table>
-            <TableHeader>
+      <div className="rounded-md border bg-background">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Phone</TableHead>
+              <TableHead className="text-right">Orders</TableHead>
+              <TableHead>Joined</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {customers.length === 0 ? (
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead className="text-right">Orders</TableHead>
-                <TableHead>Joined</TableHead>
+                <TableCell colSpan={5} className="py-12 text-center text-muted-foreground">No customers yet.</TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {customers.map((c) => (
-                <TableRow key={c.id}>
-                  <TableCell className="font-medium">
-                    {[c.firstName, c.lastName].filter(Boolean).join(' ') || '—'}
-                  </TableCell>
-                  <TableCell>{c.email}</TableCell>
-                  <TableCell className="text-muted-foreground">{c.phone ?? '—'}</TableCell>
-                  <TableCell className="text-right">{c._count.orders}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {new Date(c.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      )}
+            ) : customers.map((c) => (
+              <TableRow key={c.id}>
+                <TableCell className="font-medium">
+                  {[c.firstName, c.lastName].filter(Boolean).join(' ') || '—'}
+                </TableCell>
+                <TableCell>{c.email}</TableCell>
+                <TableCell className="text-muted-foreground">{c.phone ?? '—'}</TableCell>
+                <TableCell className="text-right">{c._count.orders}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {new Date(c.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

@@ -197,6 +197,7 @@ export function ShoesManager({ products: initialProducts }: { products: ShopifyP
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/30">
+                <th className="text-left px-5 py-3 font-medium text-muted-foreground w-14">Image</th>
                 <th className="text-left px-5 py-3 font-medium text-muted-foreground">
                   <button onClick={() => handleSort('title')} className="flex items-center gap-1 hover:text-foreground">
                     Name <ArrowUpDown className="size-3" />
@@ -214,9 +215,20 @@ export function ShoesManager({ products: initialProducts }: { products: ShopifyP
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={5} className="px-5 py-12 text-center text-muted-foreground">No shoes found.</td></tr>
+                <tr><td colSpan={6} className="px-5 py-12 text-center text-muted-foreground">No shoes found.</td></tr>
               ) : filtered.map(product => (
                 <tr key={product.id} className="border-b last:border-0 hover:bg-muted/20 transition-colors">
+                  <td className="px-5 py-4">
+                    {product.images?.edges?.[0]?.node?.url ? (
+                      <img
+                        src={product.images.edges[0].node.url}
+                        alt={product.title}
+                        className="size-10 rounded-md object-cover border"
+                      />
+                    ) : (
+                      <div className="size-10 rounded-md bg-muted flex items-center justify-center text-muted-foreground text-xs">—</div>
+                    )}
+                  </td>
                   <td className="px-5 py-4">
                     <div className="font-medium">{product.title}</div>
                     <div className="text-xs text-muted-foreground line-clamp-1">{product.description}</div>
