@@ -76,8 +76,8 @@ export function AdminSidebar() {
     <>
       <header className="md:hidden sticky top-0 z-30 flex items-center justify-between border-b bg-background px-4 py-3">
         <div className="flex items-center gap-2">
-          <Footprints className="size-5 text-foreground" />
-          <span className="font-semibold">SoleVault Admin</span>
+          <LogoSvg className="h-5 w-auto" />
+          <span className="text-xs font-medium bg-muted px-2 py-0.5 rounded-full text-muted-foreground">Admin</span>
         </div>
 
         <Sheet open={open} onOpenChange={setOpen}>
