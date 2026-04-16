@@ -54,7 +54,7 @@ export function MobileGallerySlider({ product }: MobileGallerySliderProps) {
                 src={image.url}
                 alt={image.altText}
                 fill
-                sizes="100vw"
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
                 quality={80}
                 priority={index === 0}
